@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Brian Mumo | CyberForge • Full Stack • AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Theme Variables */
+    :root {
+      --bg-primary: #0A0A1A;
+      --bg-secondary: #0f0f1f;
+      --card-bg: rgba(15, 25, 45, 0.65);
+      --text-primary: #e2e8f0;
+      --text-accent: #00ccff;
+      --text-accent2: #c084fc;
+      --border-glow: rgba(0, 204, 255, 0.4);
+      --shadow-cyber: 0 0 12px rgba(0, 204, 255, 0.3);
+      --gradient-btn: linear-gradient(135deg, #0b6e8f, #5b2c8a);
+    }
+
+    body.light-theme {
+      --bg-primary: #f0f4ff;
+      --bg-secondary: #ffffff;
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --text-primary: #0f172a;
+      --text-accent: #0066cc;
+      --text-accent2: #7c3aed;
+      --border-glow: rgba(0, 102, 204, 0.5);
+      --shadow-cyber: 0 8px 20px rgba(0, 0, 0, 0.08);
+      --gradient-btn: linear-gradient(135deg, #2563eb, #7c3aed);
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      transition: background 0.3s ease, color 0.2s ease;
+      overflow-x: hidden;
+    }
+
+    /* futuristic tech orb animation */
+    .tech-orb {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle, rgba(0,204,255,0.2), rgba(0,0,0,0));
+      border-radius: 50%;
+      filter: blur(18px);
+      z-index: 0;
+      pointer-events: none;
+      animation: pulseOrb 3s infinite alternate;
+    }
+
+    @keyframes pulseOrb {
+      0% { transform: scale(0.8); opacity: 0.3; background: radial-gradient(circle, rgba(0,204,255,0.2), transparent);}
+      100% { transform: scale(1.2); opacity: 0.7; background: radial-gradient(circle, rgba(192,132,252,0.3), transparent);}
+    }
+
+    /* matrix rain effect */
+    #matrixCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.12;
+      transition: opacity 0.3s;
+    }
+    body.light-theme #matrixCanvas { opacity: 0.05; }
+
+    /* sections */
+    .section {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      position: relative;
+      z-index: 2;
+    }
+    .section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* cards with glassmorphism + theme adaptation */
+    .skill-card, .project-card, .exp-card, .edu-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-glow);
+      border-radius: 1.5rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    }
+    .skill-card:hover, .project-card:hover, .exp-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: var(--text-accent);
+      box-shadow: var(--shadow-cyber);
+    }
+    .project-card {
+      background: var(--card-bg);
+    }
+
+    /* terminal input */
+    .terminal-input {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--text-accent);
+      backdrop-filter: blur(4px);
+      color: var(--text-primary);
+      transition: all 0.2s;
+    }
+    .terminal-input:focus {
+      outline: none;
+      border-color: var(--text-accent2);
+      box-shadow: 0 0 12px var(--text-accent);
+    }
+
+    /* modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(20px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: var(--bg-secondary);
+      border: 2px solid var(--text-accent);
+      border-radius: 28px;
+      padding: 28px;
+      max-width: 500px;
+      width: 90%;
+      color: var(--text-primary);
+    }
+    .close-modal {
+      color: var(--text-accent);
+      font-size: 32px;
+      cursor: pointer;
+    }
+
+    /* theme toggle switch */
+    .theme-switch {
+      width: 48px;
+      height: 48px;
+      border-radius: 60px;
+      background: rgba(0,204,255,0.2);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid var(--border-glow);
+      font-size: 24px;
+    }
+    .theme-switch:hover {
+      transform: scale(1.1);
+      background: rgba(0,204,255,0.4);
+    }
+
+    /* custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--text-accent); border-radius: 10px; }
+
+    /* mobile improvements */
+    @media (max-width: 768px) {
+      .section { padding: 32px 16px; }
+      h1, .hero-title { font-size: 2rem; }
+    }
+    .glitch {
+      animation: glitchText 2s infinite;
+    }
+    @keyframes glitchText {
+      0%,100%{ text-shadow: -1px 0 var(--text-accent2), 1px 0 var(--text-accent);}
+      25%{ text-shadow: 1px -1px var(--text-accent2), -1px 1px var(--text-accent);}
+    }
+    .typing-cursor {
+      display: inline-block;
+      width: 3px;
+      height: 1.2em;
+      background: var(--text-accent);
+      animation: blink 1s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+  </style>
+</head>
+<body>
+
+  <!-- tech orb + matrix canvas -->
+  <div class="tech-orb"></div>
+  <canvas id="matrixCanvas"></canvas>
+
+  <!-- loading screen -->
+  <div id="loadingScreen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg-primary); z-index:10000; display:flex; align-items:center; justify-content:center; transition:opacity 0.8s;">
+    <div class="text-center">
+      <div class="text-3xl font-mono text-cyan-400 animate-pulse">⟁ CYBERFORGE v2.0</div>
+      <div class="w-64 h-1 bg-gray-600 mt-4 rounded-full overflow-hidden"><div id="loadFill" class="w-0 h-full bg-gradient-to-r from-cyan-400 to-purple-500 transition-all duration-30"></div></div>
+      <div id="loadPercent" class="text-cyan-300 font-mono mt-2">0%</div>
+    </div>
+  </div>
+
+  <!-- main content -->
+  <div id="root" style="position:relative; z-index:2;">
+
+    <!-- navbar with theme toggle -->
+    <nav class="fixed top-0 w-full backdrop-blur-xl bg-opacity-70 z-50 px-5 py-3 flex justify-between items-center border-b" style="background: var(--bg-secondary); border-color: var(--border-glow);">
+      <div class="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent glitch">{BM}</div>
+      <div class="flex items-center gap-4">
+        <div class="hidden md:flex gap-6 text-sm font-medium">
+          <a href="#home" class="hover:text-cyan-400 transition">Home</a>
+          <a href="#about" class="hover:text-cyan-400 transition">About</a>
+          <a href="#projects" class="hover:text-cyan-400 transition">Projects</a>
+          <a href="#skills" class="hover:text-cyan-400 transition">Skills</a>
+          <a href="#contact" class="hover:text-cyan-400 transition">Contact</a>
+        </div>
+        <div id="themeToggleBtn" class="theme-switch">🌙</div>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section id="home" class="min-h-screen flex flex-col justify-center items-center text-center px-4 relative">
+      <div class="mb-4 text-7xl animate-bounce">⚡</div>
+      <h1 id="dynamicHero" class="text-5xl md:text-7xl font-bold font-mono mb-4" style="color: var(--text-accent);"></h1>
+      <p class="text-xl" style="color: var(--text-accent2);">IT Professional • Full Stack Developer • Video Producer</p>
+      <!-- animated laptop alternative -->
+      <div class="my-8 w-72 h-44 border-2 rounded-xl flex items-center justify-center relative bg-black/30 backdrop-blur" style="border-color: var(--text-accent); box-shadow: 0 0 20px var(--text-accent);">
+        <div id="laptopMsg" class="font-mono text-sm text-cyan-300">> system_ready</div>
+        <div class="absolute -bottom-3 left-4 right-4 h-2 bg-gray-800 rounded-b-md" style="background: var(--text-accent);"></div>
+      </div>
+      <div class="flex gap-5 mt-6 flex-wrap justify-center">
+        <a href="#projects" class="px-7 py-3 rounded-full font-bold shadow-xl transition-all duration-300 hover:scale-110" style="background: var(--gradient-btn); color: white;">Explore Work ✨</a>
+        <a href="#contact" class="px-7 py-3 rounded-full border-2 font-semibold transition-all hover:scale-105" style="border-color: var(--text-accent); color: var(--text-accent);">Contact Me 📡</a>
+      </div>
+      <div class="absolute bottom-5 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer" onclick="window.scrollTo({top: window.innerHeight, behavior:'smooth'})">
+        <div style="color: var(--text-accent);">⌄</div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="section py-20 px-6 max-w-6xl mx-auto">
+      <h2 class="text-4xl md:text-5xl font-bold text-center mb-10"><span class="border-b-4 border-cyan-500 pb-2">ABOUT_ME</span></h2>
+      <div class="rounded-3xl p-8 backdrop-blur-md border" style="background: var(--card-bg); border-color: var(--border-glow);">
+        <p class="leading-relaxed text-base md:text-lg">I am a versatile IT professional and Full Stack developer with hands-on experience in networking, system maintenance, data analysis, and web development. Certified in AI (Moringa School) covering ML, DL, AI tools, and responsible AI. I combine technical, analytical, and creative skills to build solutions that solve real problems. Passionate about Full Stack, Cloud, DevOps, AI, and Video Production.</p>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+        <div class="p-4 rounded-xl text-center" style="background: var(--card-bg);"><div class="text-3xl">3+</div><div>Years IT Exp</div></div>
+        <div class="p-4 rounded-xl text-center" style="background: var(--card-bg);"><div class="text-3xl">20+</div><div>Projects</div></div>
+        <div class="p-4 rounded-xl text-center" style="background: var(--card-bg);"><div class="text-3xl">50+</div><div>Video Works</div></div>
+        <div class="p-4 rounded-xl text-center" style="background: var(--card-bg);"><div class="text-3xl">100%</div><div>Commitment</div></div>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section id="skills" class="section py-20 px-6 max-w-7xl mx-auto">
+      <h2 class="text-4xl md:text-5xl font-bold text-center mb-12"><span class="border-b-4 border-purple-500 pb-2">SKILLS</span></h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="skillsGrid"></div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects" class="section py-20 px-6 max-w-7xl mx-auto">
+      <h2 class="text-4xl md:text-5xl font-bold text-center mb-12"><span class="border-b-4 border-cyan-500 pb-2">PROJECTS</span></h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="projectsGrid"></div>
+    </section>
+
+    <!-- Experience & Education combined elegance -->
+    <section class="section py-20 px-6 max-w-7xl mx-auto">
+      <div class="grid md:grid-cols-2 gap-10">
+        <div><h2 class="text-3xl font-bold mb-6"><span class="border-b border-cyan-400">EXPERIENCE</span></h2>
+          <div class="space-y-6">
+            <div class="exp-card p-5"><h3 class="text-xl font-bold text-cyan-400">IT Attaché – Machakos County Govt</h3><p class="text-sm opacity-80">May 2024 – Aug 2024</p><p class="mt-2">Network setup, troubleshooting, improved workflow efficiency by 25%.</p></div>
+            <div class="exp-card p-5"><h3 class="text-xl font-bold text-cyan-400">Freelance Videographer & Editor</h3><p class="text-sm opacity-80">2022 – Present</p><p class="mt-2">20+ clients, event coverage, color grading, motion graphics, post-production.</p></div>
+          </div>
+        </div>
+        <div><h2 class="text-3xl font-bold mb-6"><span class="border-b border-purple-400">EDUCATION</span></h2>
+          <div class="space-y-4">
+            <div class="edu-card p-5"><h3 class="text-lg font-bold text-cyan-300">BSc Information Technology</h3><p>Mount Kenya University (2024–2027)</p></div>
+            <div class="edu-card p-5"><h3 class="text-lg font-bold text-cyan-300">AI Certification</h3><p>Moringa School (2025) – ML, Deep Learning</p></div>
+            <div class="edu-card p-5"><h3 class="text-lg font-bold text-cyan-300">Data Analytics</h3><p>SPSS, STATA, Visualization</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Strengths + why hire -->
+    <section class="section py-20 px-6 bg-gradient-to-r from-cyan-950/20 to-purple-950/20">
+      <div class="max-w-5xl mx-auto">
+        <h2 class="text-4xl font-bold text-center mb-8"><span class="border-b-4 border-cyan-500 pb-2">STRENGTHS</span></h2>
+        <div class="grid md:grid-cols-2 gap-8">
+          <ul class="space-y-3 text-lg"><li>⚡ Problem-solving & critical thinking</li><li>🚀 Fast learner & adaptable</li><li>🤝 Strong communication & teamwork</li><li>💡 Creative & innovative mindset</li></ul>
+          <div><h3 class="text-3xl font-bold mb-4">🎯 Why Hire Me?</h3><p class="leading-relaxed">A multi-disciplinary IT professional bridging Full Stack, AI, Cloud, Data, and Video Production. I deliver solutions that automate processes, improve performance, and create compelling content. Unique blend of technical depth + creative edge.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="section py-20 px-6 max-w-3xl mx-auto">
+      <h2 class="text-4xl md:text-5xl font-bold text-center mb-10"><span class="border-b-4 border-cyan-500 pb-2">CONTACT</span></h2>
+      <div class="rounded-2xl p-8 border backdrop-blur-md" style="background: var(--card-bg); border-color: var(--border-glow);">
+        <div class="font-mono text-sm mb-4" style="color: var(--text-accent);">$ echo "message_ready"</div>
+        <form id="contactForm" action="https://formspree.io/f/mbdpzkvw" method="POST">
+          <div class="space-y-4">
+            <input type="text" name="name" placeholder="> name" required class="terminal-input w-full p-3 rounded-lg">
+            <input type="email" name="email" placeholder="> email" required class="terminal-input w-full p-3 rounded-lg">
+            <textarea name="message" rows="4" placeholder="> message" required class="terminal-input w-full p-3 rounded-lg"></textarea>
+            <button type="submit" class="w-full py-3 rounded-full font-bold transition hover:scale-105" style="background: var(--gradient-btn); color: white;">Send Message →</button>
+          </div>
+        </form>
+        <div class="flex justify-center gap-6 mt-8 text-2xl">
+          <a href="#" class="hover:text-cyan-400 transition">🐙</a><a href="#" class="hover:text-cyan-400 transition">💼</a><a href="#" class="hover:text-cyan-400 transition">📧</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="text-center py-6 text-sm opacity-70 border-t" style="border-color: var(--border-glow);">© 2025 Brian Mumo — CyberForge | Full Stack & AI | Video Producer</footer>
+  </div>
+
+  <!-- modal -->
+  <div id="projectModal" class="modal"><div class="modal-content relative"><span class="close-modal absolute right-5 top-2">&times;</span><h2 id="modalTitle" class="text-2xl font-bold text-cyan-400"></h2><p id="modalDesc" class="my-3"></p><p><strong>Tech Stack:</strong> <span id="modalTech"></span></p><p class="mt-2"><strong>Impact:</strong> <span id="modalImpact"></span></p><a id="modalLink" href="#" target="_blank" class="inline-block mt-5 px-5 py-2 rounded-lg text-white" style="background: var(--gradient-btn);">Explore →</a></div></div>
+
+  <script>
+    // loading sequence
+    let loadPercent = 0;
+    const loadInterval = setInterval(() => {
+      loadPercent += Math.floor(Math.random() * 8) + 2;
+      if (loadPercent >= 100) { loadPercent = 100; clearInterval(loadInterval); setTimeout(() => { const ls = document.getElementById('loadingScreen'); if(ls) ls.style.opacity = '0'; setTimeout(() => ls?.remove(), 600); }, 300); }
+      document.getElementById('loadFill') && (document.getElementById('loadFill').style.width = loadPercent + '%');
+      document.getElementById('loadPercent') && (document.getElementById('loadPercent').innerText = loadPercent + '%');
+    }, 45);
+
+    // Hero typing
+    setTimeout(() => {
+      const heroEl = document.getElementById('dynamicHero');
+      if(heroEl) {
+        const fullName = "Brian Mumo";
+        heroEl.innerHTML = '';
+        let idx = 0;
+        const typer = setInterval(() => {
+          if(idx <= fullName.length) { heroEl.innerHTML = fullName.slice(0, idx) + '<span class="typing-cursor"></span>'; idx++; } else clearInterval(typer);
+        }, 110);
+      }
+      const laptopDiv = document.getElementById('laptopMsg');
+      const msgs = ["> booting kernel", "> neural link stable", "> Brian Mumo online", "> ready for build"];
+      let step = 0;
+      const laptopInt = setInterval(() => { if(laptopDiv && step < msgs.length) { laptopDiv.innerText = msgs[step]; step++; } else clearInterval(laptopInt); }, 800);
+    }, 400);
+
+    // Skills & projects data
+    const skillsData = [
+      { name: "Full Stack Development", level: 88, desc: "React, Node.js, PHP, Laravel, Tailwind", icon: "💻" },
+      { name: "Cloud & DevOps", level: 74, desc: "AWS, Docker, CI/CD", icon: "☁️" },
+      { name: "AI & ML", level: 78, desc: "Python, TensorFlow, LangChain", icon: "🤖" },
+      { name: "IT Networking", level: 82, desc: "CCNA, Security, Monitoring", icon: "🌐" },
+      { name: "Video Production", level: 87, desc: "DaVinci, Premiere, After Effects", icon: "🎬" }
+    ];
+    const projectsData = [
+      { title: "MemoryMapAI", category: "AI/ML", tech: "Python, LangChain, OpenAI", desc: "Intelligent chatbot with persistent memory. 92% user satisfaction.", impact: "40% engagement increase", link: "#", icon: "🧠" },
+      { title: "KRA PIN Validator", category: "Web Dev", tech: "PHP, Laravel, MySQL", desc: "Automated verification system reducing errors by 60%.", impact: "60% error reduction", link: "#", icon: "✅" },
+      { title: "IT Support System", category: "IT Management", tech: "Django, PostgreSQL", desc: "Ticketing system with automated routing for institutions.", impact: "50% faster response", link: "#", icon: "🖥️" },
+      { title: "Video Production Portfolio", category: "Creative", tech: "DaVinci Resolve, After Effects", desc: "Corporate videos, events, motion graphics for 20+ clients.", impact: "100k+ views", link: "#", icon: "🎥" }
+    ];
+    const skillsContainer = document.getElementById('skillsGrid');
+    if(skillsContainer) skillsData.forEach(s => { const card = document.createElement('div'); card.className = 'skill-card p-5'; card.innerHTML = `<div class="text-3xl">${s.icon}</div><h3 class="text-xl font-bold mt-2" style="color:var(--text-accent);">${s.name}</h3><div class="w-full bg-gray-600 rounded-full h-2 my-2"><div class="h-2 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500" style="width: ${s.level}%"></div></div><p class="text-sm opacity-80">${s.desc}</p><p class="text-right text-xs mt-1">${s.level}%</p>`; skillsContainer.appendChild(card); });
+    const projContainer = document.getElementById('projectsGrid');
+    if(projContainer) projectsData.forEach(p => { const card = document.createElement('div'); card.className = 'project-card p-5 cursor-pointer'; card.onclick = () => openModal(p); card.innerHTML = `<div class="text-4xl">${p.icon}</div><h3 class="text-xl font-bold text-cyan-300 mt-2">${p.title}</h3><p class="text-sm mt-1 line-clamp-2">${p.desc.substring(0,80)}...</p><div class="flex justify-between mt-3"><span class="text-xs text-purple-300">${p.category}</span><span class="text-xs">↗ expand</span></div>`; projContainer.appendChild(card); });
+    function openModal(proj) { const modal = document.getElementById('projectModal'); document.getElementById('modalTitle').innerText = proj.title; document.getElementById('modalDesc').innerText = proj.desc; document.getElementById('modalTech').innerText = proj.tech; document.getElementById('modalImpact').innerText = proj.impact; document.getElementById('modalLink').href = proj.link; modal.classList.add('active'); }
+    document.querySelector('.close-modal')?.addEventListener('click', () => document.getElementById('projectModal')?.classList.remove('active'));
+    document.getElementById('projectModal')?.addEventListener('click', (e) => { if(e.target === document.getElementById('projectModal')) document.getElementById('projectModal')?.classList.remove('active'); });
+
+    // theme toggle + localstorage + dynamic colors update
+    const themeBtn = document.getElementById('themeToggleBtn');
+    const setTheme = (isLight) => { if(isLight) document.body.classList.add('light-theme'); else document.body.classList.remove('light-theme'); localStorage.setItem('bmTheme', isLight ? 'light' : 'dark'); if(themeBtn) themeBtn.innerText = isLight ? '☀️' : '🌙'; updateDynamicColors(); };
+    function updateDynamicColors() {
+      const isLight = document.body.classList.contains('light-theme');
+      const accentColor = isLight ? '#0066cc' : '#00ccff';
+      const accent2 = isLight ? '#7c3aed' : '#c084fc';
+      document.documentElement.style.setProperty('--text-accent', accentColor);
+      document.documentElement.style.setProperty('--text-accent2', accent2);
+    }
+    const savedTheme = localStorage.getItem('bmTheme');
+    if(savedTheme === 'light') { document.body.classList.add('light-theme'); if(themeBtn) themeBtn.innerText = '☀️'; } else { if(themeBtn) themeBtn.innerText = '🌙'; }
+    updateDynamicColors();
+    themeBtn?.addEventListener('click', () => { const isLight = !document.body.classList.contains('light-theme'); setTheme(isLight); });
+    
+    // contact form handling
+    const form = document.getElementById('contactForm');
+    form?.addEventListener('submit', async (e) => { e.preventDefault(); const btn = form.querySelector('button'); const original = btn.innerText; btn.innerText = 'Sending...'; btn.disabled = true; const fd = new FormData(form); try { const res = await fetch('https://formspree.io/f/mbdpzkvw', { method: 'POST', body: fd, headers: { Accept: 'application/json' } }); if(res.ok) { const msgDiv = document.createElement('p'); msgDiv.className = 'text-green-400 mt-3 text-center'; msgDiv.innerText = '✓ Message sent! Brian will reply soon.'; form.appendChild(msgDiv); form.reset(); setTimeout(() => msgDiv.remove(), 4000); } else throw new Error(); } catch(err) { const errDiv = document.createElement('p'); errDiv.className = 'text-red-400 mt-3 text-center'; errDiv.innerText = '✗ Failed. Try again later.'; form.appendChild(errDiv); setTimeout(() => errDiv.remove(), 3000); } btn.innerText = original; btn.disabled = false; });
+
+    // scroll observer
+    const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: 0.1, rootMargin: '0px' });
+    document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+    // matrix rain animation (unique tech)
+    const canvas = document.getElementById('matrixCanvas');
+    let ctx = canvas.getContext('2d');
+    let width = window.innerWidth, height = window.innerHeight;
+    canvas.width = width; canvas.height = height;
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+{}:<>?~";
+    let columns = Math.floor(width / 20);
+    let drops = Array(columns).fill(1);
+    function drawMatrix() { if(!ctx) return; ctx.fillStyle = 'rgba(0,0,0,0.04)'; ctx.fillRect(0,0,width,height); ctx.fillStyle = document.body.classList.contains('light-theme') ? '#0f172a' : '#0cc'; ctx.font = '15px monospace'; for(let i=0;i<drops.length;i++) { const text = chars[Math.floor(Math.random()*chars.length)]; ctx.fillText(text, i*20, drops[i]*20); if(drops[i]*20 > height && Math.random() > 0.975) drops[i] = 0; drops[i]++; } }
+    setInterval(drawMatrix, 45);
+    window.addEventListener('resize', () => { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; columns = Math.floor(width/20); drops = Array(columns).fill(1); });
+
+    // fix visibility of all texts: forced readable in both themes via CSS variables
+    const style = document.createElement('style');
+    style.textContent = `body, .text-gray-200, .text-gray-300, p, li, .project-card p, .skill-card p { color: var(--text-primary) !important; } .text-cyan-400, .text-cyan-300 { color: var(--text-accent) !important; } .text-purple-300 { color: var(--text-accent2) !important; } .bg-black\\/40, .bg-black\\/60 { background: var(--card-bg) !important; } .border-cyan-500\\/30, .border-cyan-500\\/40 { border-color: var(--border-glow) !important; } .hero-laptop, .border-cyan-400 { border-color: var(--text-accent) !important; }`;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
